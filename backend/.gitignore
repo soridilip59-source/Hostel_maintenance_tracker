@@ -1,9 +1,2 @@
 node_modules/
 .env
-
-
-<<<<<<< HEAD
- cd ~/Desktop/Hostel_maintenance_tracker/backend
-npm run create-admin -- "Hostel Admin" admin@hostel.com 'Admin@123'
-=======
->>>>>>> b559fac (all done)
