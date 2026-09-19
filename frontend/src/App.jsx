@@ -19,6 +19,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Requests from "./pages/admin/Requests";
 import RequestDetails from "./pages/admin/RequestDetails";
+import ManageAssets from "./pages/admin/ManageAssets";
 
 function App() {
   return (
@@ -115,6 +116,17 @@ function App() {
             <ProtectedRoute allowedRole="admin">
               <AdminLayout>
                 <RequestDetails />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/assets"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminLayout>
+                <ManageAssets />
               </AdminLayout>
             </ProtectedRoute>
           }

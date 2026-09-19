@@ -9,12 +9,13 @@ const {
 } = require("../controllers/maintenanceController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+const requireRole = require("../middleware/requireRole");
 
 const router = express.Router();
 
 
 // Create maintenance request
-router.post("/", authMiddleware, createMaintenance);
+router.post("/", authMiddleware, requireRole("student"), createMaintenance);
 
 
 // Get maintenance requests
@@ -30,7 +31,7 @@ router.delete("/:id", authMiddleware, deleteMaintenance);
 
 
 // Update maintenance request
-router.put("/:id", authMiddleware, updateMaintenance);
+router.put("/:id", authMiddleware, requireRole("admin"), updateMaintenance);
 
 
 module.exports = router;

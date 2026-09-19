@@ -17,6 +17,10 @@ function AdminLayout({ children }) {
           <Link to="/admin/requests">
             Maintenance Requests
           </Link>
+
+          <Link to="/admin/assets">
+            Manage Assets
+          </Link>
         </nav>
       </aside>
 

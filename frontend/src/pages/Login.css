@@ -31,6 +31,29 @@
   margin-bottom: 30px;
 }
 
+.login-role-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.login-card .login-role-selector button {
+  width: auto;
+  flex: 1;
+  background: #e9ecef;
+  color: #222;
+}
+
+.login-card .login-role-selector button[aria-pressed="true"] {
+  background: #222;
+  color: white;
+}
+
+.login-role-title {
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+
 .form-group {
   margin-bottom: 20px;
 }

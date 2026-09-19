@@ -14,14 +14,15 @@ function MyRequests() {
 
         console.log("Maintenance response:", response.data);
 
-        setRequests(response.data.data || response.data);
+        const requestData = response.data.data || response.data;
+        setRequests(Array.isArray(requestData) ? requestData : []);
       } catch (error) {
         console.log("Fetch requests error:", error);
 
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
         }
       } finally {
         setLoading(false);

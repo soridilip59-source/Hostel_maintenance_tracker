@@ -17,20 +17,17 @@ function StudentDashboard() {
         console.log("Assets:", assetsResponse.data);
         console.log("Requests:", requestsResponse.data);
 
-        setAssets(
-          assetsResponse.data.data || assetsResponse.data
-        );
-
-        setRequests(
-          requestsResponse.data.data || requestsResponse.data
-        );
+        const assetData = assetsResponse.data.data || assetsResponse.data;
+        const requestData = requestsResponse.data.data || requestsResponse.data;
+        setAssets(Array.isArray(assetData) ? assetData : []);
+        setRequests(Array.isArray(requestData) ? requestData : []);
       } catch (error) {
         console.log("Dashboard error:", error);
 
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
         }
       } finally {
         setLoading(false);

@@ -1,5 +1,17 @@
 const Asset = require("../models/Asset");
 
+const sendAssetError = (res, error, fallbackMessage) => {
+  if (error.code === 11000) {
+    return res.status(400).json({ message: "Asset code already exists" });
+  }
+
+  if (error.name === "ValidationError" || error.name === "CastError") {
+    return res.status(400).json({ message: error.message });
+  }
+
+  return res.status(500).json({ message: fallbackMessage });
+};
+
 // Create asset
 const createAsset = async (req, res) => {
   try {
@@ -40,10 +52,7 @@ const createAsset = async (req, res) => {
       data: asset,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error creating asset",
-      error: error.message,
-    });
+    return sendAssetError(res, error, "Error creating asset");
   }
 };
 
@@ -51,17 +60,14 @@ const createAsset = async (req, res) => {
 // Get all assets
 const getAssets = async (req, res) => {
   try {
-    const assets = await Asset.find();
+    const assets = await Asset.find().sort({ hostel: 1, room: 1, name: 1 });
 
     res.status(200).json({
       message: "Assets fetched successfully",
       data: assets,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching assets",
-      error: error.message,
-    });
+    return sendAssetError(res, error, "Error fetching assets");
   }
 };
 
@@ -89,10 +95,7 @@ const updateAsset = async (req, res) => {
       data: asset,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error updating asset",
-      error: error.message,
-    });
+    return sendAssetError(res, error, "Error updating asset");
   }
 };
 
@@ -112,10 +115,7 @@ const deleteAsset = async (req, res) => {
       message: "Asset deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error deleting asset",
-      error: error.message,
-    });
+    return sendAssetError(res, error, "Error deleting asset");
   }
 };
 

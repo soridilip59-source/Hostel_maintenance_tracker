@@ -35,7 +35,7 @@ function RequestDetails() {
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
         }
       } finally {
         setLoading(false);
@@ -74,7 +74,7 @@ function RequestDetails() {
       if (error.response) {
         setError(error.response.data.message);
       } else {
-        setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
       }
     }
   }

@@ -1,20 +1,31 @@
 const Maintenance = require("../models/Maintenance");
+const Asset = require("../models/Asset");
+const mongoose = require("mongoose");
 
 // Create maintenance request
 const createMaintenance = async (req, res) => {
   try {
     const { assetId, description } = req.body;
 
-    if (!assetId || !description) {
+    if (!assetId || !description?.trim()) {
       return res.status(400).json({
         message: "Asset and description are required",
       });
     }
 
+    if (!mongoose.isValidObjectId(assetId)) {
+      return res.status(400).json({ message: "Please select a valid asset" });
+    }
+
+    const asset = await Asset.findById(assetId);
+    if (!asset) {
+      return res.status(404).json({ message: "Selected asset was not found" });
+    }
+
     const maintenance = await Maintenance.create({
       assetId,
       reportedBy: req.user.id,
-      description,
+      description: description.trim(),
     });
 
     res.status(201).json({
@@ -38,6 +49,7 @@ const getMaintenance = async (req, res) => {
     if (req.user.role === "admin") {
       // Admin can see all requests
       maintenance = await Maintenance.find()
+        .sort({ createdAt: -1 })
         .populate("assetId")
         .populate("reportedBy", "name email");
     } else {
@@ -45,6 +57,7 @@ const getMaintenance = async (req, res) => {
       maintenance = await Maintenance.find({
         reportedBy: req.user.id,
       })
+        .sort({ createdAt: -1 })
         .populate("assetId")
         .populate("reportedBy", "name email");
     }
@@ -75,6 +88,13 @@ const getMaintenanceById = async (req, res) => {
       });
     }
 
+    if (
+      req.user.role !== "admin" &&
+      maintenance.reportedBy._id.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ message: "You do not have permission to view this request" });
+    }
+
     res.status(200).json({
       message: "Maintenance request fetched successfully",
       data: maintenance,
@@ -91,15 +111,22 @@ const getMaintenanceById = async (req, res) => {
 // Delete maintenance request
 const deleteMaintenance = async (req, res) => {
   try {
-    const maintenance = await Maintenance.findByIdAndDelete(
-      req.params.id
-    );
+    const maintenance = await Maintenance.findById(req.params.id);
 
     if (!maintenance) {
       return res.status(404).json({
         message: "Maintenance request not found",
       });
     }
+
+    if (
+      req.user.role !== "admin" &&
+      maintenance.reportedBy.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ message: "You do not have permission to delete this request" });
+    }
+
+    await maintenance.deleteOne();
 
     res.status(200).json({
       message: "Maintenance request deleted successfully",
@@ -118,11 +145,19 @@ const updateMaintenance = async (req, res) => {
   try {
     const { status, resolutionNote } = req.body;
 
+    if (!["Pending", "In Progress", "Resolved"].includes(status)) {
+      return res.status(400).json({ message: "Please select a valid status" });
+    }
+
+    if (status === "Resolved" && !resolutionNote?.trim()) {
+      return res.status(400).json({ message: "A resolution note is required when resolving a request" });
+    }
+
     const maintenance = await Maintenance.findByIdAndUpdate(
       req.params.id,
       {
         status,
-        resolutionNote,
+        resolutionNote: resolutionNote?.trim() || "",
       },
       {
         new: true,

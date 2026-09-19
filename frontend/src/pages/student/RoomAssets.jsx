@@ -14,14 +14,15 @@ function RoomAssets() {
 
         console.log("Assets response:", response.data);
 
-        setAssets(response.data.data || response.data);
+        const assetData = response.data.data || response.data;
+        setAssets(Array.isArray(assetData) ? assetData : []);
       } catch (error) {
         console.log("Fetch assets error:", error);
 
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
         }
       } finally {
         setLoading(false);

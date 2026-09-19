@@ -5,12 +5,22 @@ const User = require("../models/User");
 // Register
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const name = req.body.name?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || typeof password !== "string" || !password) {
       return res.status(400).json({
         message: "Name, email and password are required"
       });
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ message: "Please enter a valid email address" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must contain at least 6 characters" });
     }
 
     const existingUser = await User.findOne({ email });
@@ -27,7 +37,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || "student"
+      role: "student"
     });
 
     res.status(201).json({
@@ -42,7 +52,7 @@ const registerUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Registration failed",
-      error: error.message
+      error: process.env.NODE_ENV === "development" ? error.message : undefined
     });
   }
 };
@@ -50,9 +60,10 @@ const registerUser = async (req, res) => {
 // Login
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
 
-    if (!email || !password) {
+    if (!email || typeof password !== "string" || !password) {
       return res.status(400).json({
         message: "Email and password are required"
       });

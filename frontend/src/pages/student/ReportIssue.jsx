@@ -14,7 +14,7 @@ function ReportIssue() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Fetch assets from MongoDB
+  // Fetch assets
   useEffect(() => {
     async function fetchAssets() {
       try {
@@ -22,14 +22,24 @@ function ReportIssue() {
 
         console.log("Assets response:", response.data);
 
-        setAssets(response.data.data || response.data);
+        // Handle API response
+        const assetData = response.data.data || response.data;
+
+        if (Array.isArray(assetData)) {
+          setAssets(assetData);
+        } else {
+          setAssets([]);
+          setError("No assets found");
+        }
       } catch (error) {
         console.log("Fetch assets error:", error);
 
         if (error.response) {
-          setError(error.response.data.message);
+          setError(
+            error.response.data.message || "Failed to load assets"
+          );
         } else {
-          setError("Server is not running");
+          setError("Cannot reach the backend server. Please check that it is running.");
         }
       } finally {
         setLoading(false);
@@ -43,12 +53,12 @@ function ReportIssue() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (asset === "") {
+    if (!asset) {
       setError("Please select an asset");
       return;
     }
 
-    if (description === "") {
+    if (!description.trim()) {
       setError("Please describe the problem");
       return;
     }
@@ -66,11 +76,9 @@ function ReportIssue() {
 
       setMessage("Issue reported successfully");
 
-      // Clear form
       setAsset("");
       setDescription("");
 
-      // Go to My Requests page
       setTimeout(() => {
         navigate("/student/requests");
       }, 1000);
@@ -78,9 +86,11 @@ function ReportIssue() {
       console.log("Report issue error:", error);
 
       if (error.response) {
-        setError(error.response.data.message);
+        setError(
+          error.response.data.message || "Failed to report issue"
+        );
       } else {
-        setError("Server is not running");
+        setError("Cannot reach the backend server. Please check that it is running.");
       }
     }
   }
@@ -91,41 +101,48 @@ function ReportIssue() {
 
       <p>Report an issue with an item in your room.</p>
 
+      {!loading && assets.length === 0 && !error && (
+        <p>No assets are available yet. Ask an admin to add assets first.</p>
+      )}
+
       <form onSubmit={handleSubmit}>
 
-        {/* Asset Dropdown */}
+        {/* Asset */}
         <div>
           <label>Select Asset</label>
 
           <select
             value={asset}
-            onChange={(e) => setAsset(e.target.value)}
+            onChange={(e) => {
+              setAsset(e.target.value);
+              setError("");
+            }}
+            disabled={loading}
+            required
           >
-            <option value="">Select an asset</option>
+            <option value="">
+              {loading ? "Loading assets..." : "Select an asset"}
+            </option>
 
-            {loading ? (
-              <option>Loading assets...</option>
-            ) : (
-              assets.map((item) => (
-                <option
-                  key={item._id}
-                  value={item._id}
-                >
-                  {item.name} - {item.assetCode}
-                </option>
-              ))
-            )}
+            {assets.map((item) => (
+              <option key={item._id} value={item._id}>
+                {item.name} - {item.assetCode}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/* Description */}
+        {/* Problem Description */}
         <div>
           <label>Describe the problem</label>
 
           <textarea
             placeholder="Describe the damage or problem..."
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              setError("");
+            }}
           />
         </div>
 
@@ -135,8 +152,7 @@ function ReportIssue() {
         {/* Success */}
         {message && <p>{message}</p>}
 
-        {/* Submit */}
-        <button type="submit">
+        <button type="submit" disabled={loading || assets.length === 0}>
           Report Issue
         </button>
 

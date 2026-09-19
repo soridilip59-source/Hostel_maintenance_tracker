@@ -29,6 +29,11 @@ function Signup() {
       return;
     }
 
+    if (password.length < 6) {
+      setError("Password must contain at least 6 characters");
+      return;
+    }
+
     if (confirmPassword === "") {
       setError("Please confirm your password");
       return;
@@ -94,6 +99,7 @@ function Signup() {
 
           <input
             type="password"
+            minLength="6"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -105,6 +111,7 @@ function Signup() {
 
           <input
             type="password"
+            minLength="6"
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
