@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../services/api";
 import "./Login.css"
 
@@ -10,6 +11,32 @@ function Login() {
     const [loginRole, setLoginRole] = useState("student");
 
     const [error, setError] = useState("");
+    const [googleLoading, setGoogleLoading] = useState(false);
+
+    function finishLogin(user, token) {
+        if (user.role !== loginRole) {
+            setError(`This account is registered as a ${user.role}. Please select ${user.role === "admin" ? "Admin Login" : "Student Login"}.`);
+            return;
+        }
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", user.role);
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate(user.role === "student" ? "/student/dashboard" : "/admin/dashboard");
+    }
+
+    async function handleGoogleLogin(response) {
+        setGoogleLoading(true);
+        setError("");
+        try {
+            const result = await api.post("/auth/google", { credential: response.credential });
+            finishLogin(result.data.user, result.data.token);
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Google login failed");
+        } finally {
+            setGoogleLoading(false);
+        }
+    }
 
 
 
@@ -42,17 +69,7 @@ function Login() {
                 return;
             }
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("role", role);
-
-
-            if (role === "student") {
-                navigate("/student/dashboard");
-            }
-
-            if (role === "admin") {
-                navigate("/admin/dashboard");
-            }
+            finishLogin(response.data.user, token);
 
 
         } catch (error) {
@@ -98,9 +115,12 @@ function Login() {
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} id="password" />
                     </div>
 
-                    {error && <p>{error}</p>}
+                    {error && <p className="error-message">{error}</p>}
                     <button type="submit">Login</button>
                 </form>
+                <div className="login-divider"><span>or continue with</span></div>
+                {import.meta.env.VITE_GOOGLE_CLIENT_ID ? <div className="google-login"><GoogleLogin onSuccess={handleGoogleLogin} onError={() => setError("Google login was cancelled or failed")} useOneTap={false} /></div> : <p className="google-config-note">Google login is unavailable until VITE_GOOGLE_CLIENT_ID is configured.</p>}
+                {googleLoading && <p className="login-status">Signing you in with Google...</p>}
                 <p>
                     New student? <Link to="/signup">Create an account</Link>
                 </p>

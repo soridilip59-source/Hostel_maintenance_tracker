@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 function Signup() {
   const navigate = useNavigate();
@@ -68,12 +69,11 @@ function Signup() {
   }
 
   return (
-    <div>
-      <h1>Create Account</h1>
-
+    <div className="login-page">
+      <div className="login-card">
+      <p className="eyebrow">Hostel Maintenance Tracker</p><h1>Create Account</h1><p className="login-subtitle">Create your student account to report and track issues.</p>
       <form onSubmit={handleSignup}>
-        <div>
-          <label>Name</label>
+        <div className="form-group"><label>Name</label>
 
           <input
             type="text"
@@ -83,8 +83,7 @@ function Signup() {
           />
         </div>
 
-        <div>
-          <label>Email</label>
+        <div className="form-group"><label>Email</label>
 
           <input
             type="email"
@@ -94,8 +93,7 @@ function Signup() {
           />
         </div>
 
-        <div>
-          <label>Password</label>
+        <div className="form-group"><label>Password</label>
 
           <input
             type="password"
@@ -106,8 +104,7 @@ function Signup() {
           />
         </div>
 
-        <div>
-          <label>Confirm Password</label>
+        <div className="form-group"><label>Confirm Password</label>
 
           <input
             type="password"
@@ -118,12 +115,14 @@ function Signup() {
           />
         </div>
 
-        {error && <p>{error}</p>}
+        {error && <p className="error-message">{error}</p>}
 
-        <button type="submit" >
+        <button type="submit">
           Sign Up
         </button>
       </form>
+      <p>Already registered? <Link to="/">Back to login</Link></p>
+      </div>
     </div>
   );
 }

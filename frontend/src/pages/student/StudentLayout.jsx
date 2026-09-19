@@ -3,12 +3,10 @@ import Sidebar from "../../components/Sidebar";
 
 function StudentLayout({ children }) {
   return (
-    <div>
-      <Navbar />
-
+    <div className="app-shell">
       <Sidebar />
-
-      <main>
+      <Navbar />
+      <main className="main-content">
         {children}
       </main>
     </div>

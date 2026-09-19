@@ -97,3 +97,33 @@
 .login-card button:hover {
   background: #444;
 }
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: #9aa4b4;
+  font-size: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #e5e9ef;
+}
+
+.google-login {
+  display: flex;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.google-config-note,
+.login-status {
+  color: #8994a5;
+  font-size: 12px;
+  text-align: center;
+}
