@@ -1,11 +1,17 @@
 const express = require("express");
 
+const maintenanceRoutes = require("./routes/maintenanceRoutes");
+
 const app = express();
 
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Hostel Maintenance API is running");
+  res.json({
+    message: "Hostel Maintenance Tracker API is running",
+  });
 });
+
+app.use("/api/maintenance", maintenanceRoutes);
 
 module.exports = app;

@@ -1,4 +1,4 @@
-const Maintenance = require("../models/maintenanceModel");
+const Maintenance = require("../models/Maintenance");
 
 // Create maintenance request
 const createMaintenance = async (req, res) => {
@@ -56,8 +56,39 @@ const deleteMaintenance = async (req, res) => {
   }
 };
 
+// Update maintenance request
+const updateMaintenance = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const maintenance = await Maintenance.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!maintenance) {
+      return res.status(404).json({
+        message: "Maintenance request not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Maintenance request updated successfully",
+      data: maintenance,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error updating maintenance request",
+      error: error.message,
+    });
+  }
+};
+
+// Export all controllers
 module.exports = {
   createMaintenance,
   getMaintenance,
   deleteMaintenance,
+  updateMaintenance,
 };
