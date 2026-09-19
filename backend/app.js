@@ -5,7 +5,9 @@ const assetRoutes = require("./routes/assetRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
