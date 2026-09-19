@@ -1,5 +1,5 @@
 import Login from "./pages/Login";
-import Signup from "./components/Signup";
+import Signup from "./pages/Signup";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
