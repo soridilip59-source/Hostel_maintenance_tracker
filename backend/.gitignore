@@ -1,1 +1,2 @@
 .env
+MONGO_URI =mongodb+srv://balkrishanthakur25_db_user:amanthakur2005@cluster0.frxzbdt.mongodb.net/Hostel_maintenance_tracker?appName=Cluster0
