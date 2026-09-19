@@ -1,61 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import AssetCard from "../../components/AssetCard";
 import api from "../../services/api";
 
 function RoomAssets() {
-  const [assets, setAssets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function fetchAssets() {
-      try {
-        const response = await api.get("/assets");
-
-        console.log("Assets response:", response.data);
-
-        const assetData = response.data.data || response.data;
-        setAssets(Array.isArray(assetData) ? assetData : []);
-      } catch (error) {
-        console.log("Fetch assets error:", error);
-
-        if (error.response) {
-          setError(error.response.data.message);
-        } else {
-          setError("Cannot reach the backend server. Please check that it is running.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAssets();
-  }, []);
-
-  if (loading) {
-    return <p>Loading assets...</p>;
-  }
-
-  return (
-    <div>
-      <h1>Room Assets</h1>
-
-      <p>Assets available in your room</p>
-
-      {error && <p>{error}</p>}
-
-      {assets.length === 0 ? (
-        <p>No assets found.</p>
-      ) : (
-        assets.map((asset) => (
-          <AssetCard
-            key={asset._id}
-            asset={asset}
-          />
-        ))
-      )}
-    </div>
-  );
+  const [assets, setAssets] = useState([]); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
+  useEffect(() => { api.get("/assets").then((response) => setAssets(response.data?.data || [])).catch((requestError) => setError(requestError.response?.data?.message || "Unable to load room assets.")).finally(() => setLoading(false)); }, []);
+  return <><div className="page-header"><div><p className="eyebrow">Your room</p><h1>Room Assets</h1><p className="subtitle">Browse the assets available in your hostel room.</p></div><span className="page-date">{assets.length} assets</span></div>{loading ? <div className="loading-state">Loading room assets...</div> : error ? <div className="error-state">{error}</div> : assets.length === 0 ? <div className="empty-state">No assets have been added yet.</div> : <div className="asset-grid">{assets.map((asset) => <AssetCard key={asset._id} asset={asset} />)}</div>}
+  </>;
 }
-
 export default RoomAssets;

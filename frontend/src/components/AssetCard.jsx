@@ -1,12 +1,14 @@
 
 function AssetCard({ asset }) {
+    const tone = asset.condition === "Good" ? "success" : asset.condition === "Damaged" ? "pending" : "progress";
+
     return (
-        <div className="asset-card">
+        <div>
             <h3>{asset.name}</h3>
             <p>Asset Code: {asset.assetCode}</p>
             <p>Hostel: {asset.hostel}</p>
             <p>Room: {asset.room}</p>
-            <p className="asset-condition">Condition: {asset.condition}</p>
+            <p>Condition: {asset.condition}</p>
 
         </div>
     )

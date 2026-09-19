@@ -1,5 +1,14 @@
 # React + Vite
 
+## Google Login setup
+
+1. In Google Cloud Console, create a Web OAuth client ID and add your frontend origin to **Authorized JavaScript origins** (for local development: `http://localhost:5173`).
+2. Copy `.env.example` to `.env` and set `VITE_GOOGLE_CLIENT_ID` to that client ID.
+3. Set the same client ID as `GOOGLE_CLIENT_ID` in `backend/.env`.
+4. Restart both the Vite frontend and Express backend.
+
+Google sign-in credentials are verified by the backend before the application JWT is issued. New Google accounts are created as students; existing users keep their existing role.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

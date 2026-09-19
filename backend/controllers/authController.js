@@ -1,6 +1,22 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User");
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
+const googleClient = new OAuth2Client(googleClientId);
+
+function createToken(user) {
+  return jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+}
+
+function userResponse(user) {
+  return { id: user._id, name: user.name, email: user.email, role: user.role };
+}
 
 // Register
 const registerUser = async (req, res) => {
@@ -69,7 +85,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       return res.status(401).json({
@@ -77,10 +93,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = user.password && await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
@@ -88,25 +101,13 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d"
-      }
-    );
+    const token = createToken(user);
 
     res.status(200).json({
       message: "Login successful",
       token,
       user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
+        ...userResponse(user)
       }
     });
   } catch (error) {
@@ -117,7 +118,50 @@ const loginUser = async (req, res) => {
   }
 };
 
+const loginWithGoogle = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!googleClientId) {
+      return res.status(503).json({ message: "Google login is not configured on the server" });
+    }
+
+    if (!credential) {
+      return res.status(400).json({ message: "Google credential is required" });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: googleClientId
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload?.email || !payload.email_verified) {
+      return res.status(401).json({ message: "Google account email could not be verified" });
+    }
+
+    let user = await User.findOne({ email: payload.email.toLowerCase() }).select("+password");
+
+    if (!user) {
+      user = await User.create({
+        name: payload.name || payload.email.split("@")[0],
+        email: payload.email.toLowerCase(),
+        role: "student"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Google login successful",
+      token: createToken(user),
+      user: userResponse(user)
+    });
+  } catch (error) {
+    return res.status(401).json({ message: "Google login failed" });
+  }
+};
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  loginWithGoogle
 };
