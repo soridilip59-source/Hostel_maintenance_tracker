@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 
 function AdminLayout({ children }) {
   return (
-    <div>
+    <div className="app-layout">
       <Navbar />
 
-      <aside>
+      <div className="app-content">
+      <aside className="app-sidebar">
         <h3>Admin Menu</h3>
 
         <nav>
@@ -27,6 +28,7 @@ function AdminLayout({ children }) {
       <main>
         {children}
       </main>
+      </div>
     </div>
   );
 }

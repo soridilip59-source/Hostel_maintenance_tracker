@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 function Sidebar() {
   return (
-    <aside>
-      <h3>Menu</h3>
+    <aside className="app-sidebar">
+      <h3>Student Menu</h3>
 
       <nav>
         <Link to="/student/dashboard">Dashboard</Link>

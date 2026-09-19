@@ -3,14 +3,15 @@ import Sidebar from "../../components/Sidebar";
 
 function StudentLayout({ children }) {
   return (
-    <div>
+    <div className="app-layout">
       <Navbar />
 
-      <Sidebar />
-
+      <div className="app-content">
+        <Sidebar />
       <main>
         {children}
       </main>
+      </div>
     </div>
   );
 }

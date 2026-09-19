@@ -13,15 +13,15 @@ function Navbar() {
   const role = localStorage.getItem("role");
 
   return (
-    <nav>
+    <nav className="app-navbar">
       <h2>Hostel Maintenance</h2>
 
-      <div>
-        <span>
+      <div className="navbar-actions">
+        <span className="role-label">
           {role === "admin" ? "Admin" : "Student"}
         </span>
 
-        <button onClick={handleLogout}>
+        <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </div>

@@ -97,11 +97,11 @@ function ManageAssets() {
   }
 
   return (
-    <div>
+    <div className="manage-assets">
       <h1>Manage Assets</h1>
-      <p>Add the room items students can select when reporting an issue.</p>
+      <p className="page-description">Add the room items students can select when reporting an issue.</p>
 
-      <form onSubmit={handleSubmit}>
+      <form className="asset-form" onSubmit={handleSubmit}>
         <input name="name" value={form.name} onChange={updateField} placeholder="Asset name" required />
         <input name="assetCode" value={form.assetCode} onChange={updateField} placeholder="Asset code" required />
         <input name="category" value={form.category} onChange={updateField} placeholder="Category" required />
@@ -112,20 +112,20 @@ function ManageAssets() {
           <option value="Damaged">Damaged</option>
           <option value="Needs Repair">Needs Repair</option>
         </select>
-        <button type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Update Asset" : "Add Asset"}</button>
-        {editingId && <button type="button" onClick={cancelEdit}>Cancel</button>}
+        <button className="primary-button" type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Update Asset" : "Add Asset"}</button>
+        {editingId && <button className="secondary-button" type="button" onClick={cancelEdit}>Cancel</button>}
       </form>
 
-      {error && <p role="alert">{error}</p>}
-      {message && <p>{message}</p>}
+      {error && <p className="feedback feedback--error" role="alert">{error}</p>}
+      {message && <p className="feedback feedback--success">{message}</p>}
 
       {loading ? <p>Loading assets...</p> : assets.length === 0 ? <p>No assets added yet.</p> : (
-        <ul>
+        <ul className="asset-list">
           {assets.map((asset) => (
             <li key={asset._id}>
-              <strong>{asset.name}</strong> ({asset.assetCode}) — {asset.hostel}, Room {asset.room} — {asset.condition}
-              <button type="button" onClick={() => { setEditingId(asset._id); setForm({ name: asset.name, assetCode: asset.assetCode, category: asset.category, hostel: asset.hostel, room: asset.room, condition: asset.condition }); setMessage(""); }}>Edit</button>
-              <button type="button" onClick={() => deleteAsset(asset._id)}>Delete</button>
+              <span><strong>{asset.name}</strong> ({asset.assetCode}) — {asset.hostel}, Room {asset.room} — {asset.condition}</span>
+              <span className="asset-actions"><button className="edit-button" type="button" onClick={() => { setEditingId(asset._id); setForm({ name: asset.name, assetCode: asset.assetCode, category: asset.category, hostel: asset.hostel, room: asset.room, condition: asset.condition }); setMessage(""); }}>Edit</button>
+              <button className="delete-button" type="button" onClick={() => deleteAsset(asset._id)}>Delete</button></span>
             </li>
           ))}
         </ul>
