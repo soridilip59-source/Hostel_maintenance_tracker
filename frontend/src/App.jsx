@@ -1,4 +1,5 @@
 import Login from "./pages/Login";
+import Signup from "./components/Signup";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -9,6 +10,9 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login />} />
+
+                <Route path="/signup" element={<Signup/>} />
+
                 <Route path="/student/dashboard" element={<ProtectedRoutes allowedRole ="student">
                     <StudentDashboard />
                 </ProtectedRoutes>} />
