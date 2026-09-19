@@ -3,26 +3,50 @@ const Asset = require("../models/Asset");
 // Create asset
 const createAsset = async (req, res) => {
   try {
-    const { name, category, quantity, condition } = req.body;
+    const {
+      name,
+      assetCode,
+      category,
+      hostel,
+      room,
+      condition,
+    } = req.body;
+
+    if (!name || !assetCode || !category || !hostel || !room) {
+      return res.status(400).json({
+        message: "Name, asset code, category, hostel and room are required",
+      });
+    }
+
+    const existingAsset = await Asset.findOne({ assetCode });
+
+    if (existingAsset) {
+      return res.status(400).json({
+        message: "Asset code already exists",
+      });
+    }
 
     const asset = await Asset.create({
       name,
+      assetCode,
       category,
-      quantity,
-      condition
+      hostel,
+      room,
+      condition,
     });
 
     res.status(201).json({
       message: "Asset created successfully",
-      data: asset
+      data: asset,
     });
   } catch (error) {
     res.status(500).json({
       message: "Error creating asset",
-      error: error.message
+      error: error.message,
     });
   }
 };
+
 
 // Get all assets
 const getAssets = async (req, res) => {
@@ -31,15 +55,16 @@ const getAssets = async (req, res) => {
 
     res.status(200).json({
       message: "Assets fetched successfully",
-      data: assets
+      data: assets,
     });
   } catch (error) {
     res.status(500).json({
       message: "Error fetching assets",
-      error: error.message
+      error: error.message,
     });
   }
 };
+
 
 // Update asset
 const updateAsset = async (req, res) => {
@@ -49,27 +74,28 @@ const updateAsset = async (req, res) => {
       req.body,
       {
         new: true,
-        runValidators: true
+        runValidators: true,
       }
     );
 
     if (!asset) {
       return res.status(404).json({
-        message: "Asset not found"
+        message: "Asset not found",
       });
     }
 
     res.status(200).json({
       message: "Asset updated successfully",
-      data: asset
+      data: asset,
     });
   } catch (error) {
     res.status(500).json({
       message: "Error updating asset",
-      error: error.message
+      error: error.message,
     });
   }
 };
+
 
 // Delete asset
 const deleteAsset = async (req, res) => {
@@ -78,24 +104,25 @@ const deleteAsset = async (req, res) => {
 
     if (!asset) {
       return res.status(404).json({
-        message: "Asset not found"
+        message: "Asset not found",
       });
     }
 
     res.status(200).json({
-      message: "Asset deleted successfully"
+      message: "Asset deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       message: "Error deleting asset",
-      error: error.message
+      error: error.message,
     });
   }
 };
+
 
 module.exports = {
   createAsset,
   getAssets,
   updateAsset,
-  deleteAsset
+  deleteAsset,
 };

@@ -2,24 +2,32 @@ const mongoose = require("mongoose");
 
 const maintenanceSchema = new mongoose.Schema(
   {
-    studentName: {
-      type: String,
+    assetId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Asset",
       required: true,
     },
 
-    roomNumber: {
-      type: String,
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
 
-    issue: {
+    description: {
       type: String,
       required: true,
     },
 
     status: {
       type: String,
+      enum: ["Pending", "In Progress", "Resolved"],
       default: "Pending",
+    },
+
+    resolutionNote: {
+      type: String,
+      default: "",
     },
   },
   {

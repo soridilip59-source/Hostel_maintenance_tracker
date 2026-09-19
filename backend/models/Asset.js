@@ -5,29 +5,42 @@ const assetSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+    },
+
+    assetCode: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
     },
 
     category: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
-    quantity: {
-      type: Number,
+    hostel: {
+      type: String,
       required: true,
-      min: 0
+      trim: true,
+    },
+
+    room: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
     condition: {
       type: String,
       enum: ["Good", "Damaged", "Needs Repair"],
-      default: "Good"
-    }
+      default: "Good",
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

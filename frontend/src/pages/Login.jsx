@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./Login.css"
 
 function Login() {
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
 
@@ -36,15 +36,15 @@ function Login() {
             const token = response.data.token;
             const role = response.data.user.role;
 
-            localStorage.setItem("token",token);
-                        localStorage.setItem("role",role);
+            localStorage.setItem("token", token);
+            localStorage.setItem("role", role);
 
 
-            if(role==="student"){
+            if (role === "student") {
                 navigate("/student/dashboard");
             }
 
-            if(role==="admin"){
+            if (role === "admin") {
                 navigate("/admin/dashboard");
             }
 
