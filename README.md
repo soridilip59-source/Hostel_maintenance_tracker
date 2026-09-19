@@ -139,3 +139,6 @@ npm --prefix frontend run lint
 - Do not commit `backend/.env` or database passwords.
 - Use a long, private `JWT_SECRET` in production.
 - Rotate database credentials if they are ever exposed.
+
+## cd ~/Desktop/Hostel_maintenance_tracker/backend
+## npm run create-admin -- "Hostel Admin" admin@hostel.com 'Admin@123'

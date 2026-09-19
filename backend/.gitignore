@@ -2,5 +2,4 @@ node_modules/
 .env
 
 
- cd ~/Desktop/Hostel_maintenance_tracker/backend
-npm run create-admin -- "Hostel Admin" admin@hostel.com 'Admin@123'
+  
