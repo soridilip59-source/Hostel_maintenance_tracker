@@ -1,12 +1,18 @@
 import { useState } from 'react';
+import {useNavigate} from "react-router-dom";
+import api from "../services/api";
 import "./Login.css"
 
 function Login() {
+    const navigate=useNavigate()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
 
-    const [error, setError] = useState("")
-    function handleLogin(e) {
+    const [error, setError] = useState("");
+
+
+
+    async function handleLogin(e) {
         e.preventDefault();
         if (email === "") {
             setError("Email is required");
@@ -17,8 +23,37 @@ function Login() {
             return;
         }
         setError("")
-        console.log("email : ", email);
-        console.log("password : ", password);
+
+        try {
+            const response = await api.post("/auth/login", {
+                email: email,
+                password: password,
+            });
+            console.log(response.data);
+
+
+
+            const token = response.data.token;
+            const role = response.data.user.role;
+
+            localStorage.setItem("token",token);
+                        localStorage.setItem("role",role);
+
+
+            if(role==="student"){
+                navigate("/student/dashboard");
+            }
+
+            if(role==="admin"){
+                navigate("/admin/dashboard");
+            }
+
+
+        } catch (error) {
+            console.log(error);
+            setError("Invalid email or password")
+
+        }
 
 
     }
