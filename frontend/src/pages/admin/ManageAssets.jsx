@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
+
 const emptyAsset = {
   name: "",
   assetCode: "",
@@ -9,6 +10,7 @@ const emptyAsset = {
   room: "",
   condition: "Good",
 };
+
 
 function ManageAssets() {
   const [assets, setAssets] = useState([]);
@@ -19,9 +21,11 @@ function ManageAssets() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+
   const getMessage = (requestError, fallback) =>
     requestError.response?.data?.message ||
     (requestError.request ? "Cannot reach the backend server" : fallback);
+
 
   async function loadAssets() {
     try {
@@ -33,6 +37,7 @@ function ManageAssets() {
       setLoading(false);
     }
   }
+
 
   useEffect(() => {
     async function fetchAssets() {
@@ -46,12 +51,15 @@ function ManageAssets() {
       }
     }
 
+
     fetchAssets();
   }, []);
+
 
   function updateField(event) {
     setForm((previous) => ({ ...previous, [event.target.name]: event.target.value }));
   }
+
 
   function cancelEdit() {
     setEditingId("");
@@ -59,11 +67,13 @@ function ManageAssets() {
     setError("");
   }
 
+
   async function handleSubmit(event) {
     event.preventDefault();
     setSaving(true);
     setError("");
     setMessage("");
+
 
     try {
       if (editingId) {
@@ -82,8 +92,10 @@ function ManageAssets() {
     }
   }
 
+
   async function deleteAsset(id) {
     if (!window.confirm("Delete this asset? Existing requests will keep their record but no longer show asset details.")) return;
+
 
     setError("");
     setMessage("");
@@ -96,28 +108,11 @@ function ManageAssets() {
     }
   }
 
-  return (
-<<<<<<< HEAD
-    <div className="manage-assets">
-      <h1>Manage Assets</h1>
-      <p className="page-description">Add the room items students can select when reporting an issue.</p>
 
-      <form className="asset-form" onSubmit={handleSubmit}>
-        <input name="name" value={form.name} onChange={updateField} placeholder="Asset name" required />
-        <input name="assetCode" value={form.assetCode} onChange={updateField} placeholder="Asset code" required />
-        <input name="category" value={form.category} onChange={updateField} placeholder="Category" required />
-        <input name="hostel" value={form.hostel} onChange={updateField} placeholder="Hostel" required />
-        <input name="room" value={form.room} onChange={updateField} placeholder="Room" required />
-        <select name="condition" value={form.condition} onChange={updateField}>
-          <option value="Good">Good</option>
-          <option value="Damaged">Damaged</option>
-          <option value="Needs Repair">Needs Repair</option>
-        </select>
-        <button className="primary-button" type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Update Asset" : "Add Asset"}</button>
-        {editingId && <button className="secondary-button" type="button" onClick={cancelEdit}>Cancel</button>}
-=======
+  return (
     <div>
       <div className="page-header"><div><p className="eyebrow">Inventory</p><h1>Manage Assets</h1><p className="subtitle">Add and maintain the room items students can select when reporting an issue.</p></div><span className="page-date">{assets.length} assets</span></div>
+
 
       <form className="form-card" onSubmit={handleSubmit}>
         <div className="form-grid"><div className="form-field"><label htmlFor="asset-name">Asset name</label><input id="asset-name" className="form-control" name="name" value={form.name} onChange={updateField} placeholder="e.g. Ceiling fan" required /></div>
@@ -131,27 +126,17 @@ function ManageAssets() {
           <option value="Needs Repair">Needs Repair</option>
         </select></div></div>
         <div><button className="button-primary" type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Update Asset" : "Add Asset"}</button>{editingId && <button className="button-secondary" type="button" onClick={cancelEdit}>Cancel</button>}</div>
->>>>>>> 3ceaf172be1721b9777bbb9ad6c949d1f2a2c8d6
       </form>
 
-      {error && <p className="feedback feedback--error" role="alert">{error}</p>}
-      {message && <p className="feedback feedback--success">{message}</p>}
 
-<<<<<<< HEAD
-      {loading ? <p>Loading assets...</p> : assets.length === 0 ? <p>No assets added yet.</p> : (
-        <ul className="asset-list">
-          {assets.map((asset) => (
-            <li key={asset._id}>
-              <span><strong>{asset.name}</strong> ({asset.assetCode}) — {asset.hostel}, Room {asset.room} — {asset.condition}</span>
-              <span className="asset-actions"><button className="edit-button" type="button" onClick={() => { setEditingId(asset._id); setForm({ name: asset.name, assetCode: asset.assetCode, category: asset.category, hostel: asset.hostel, room: asset.room, condition: asset.condition }); setMessage(""); }}>Edit</button>
-              <button className="delete-button" type="button" onClick={() => deleteAsset(asset._id)}>Delete</button></span>
-            </li>
-=======
+      {error && <p role="alert">{error}</p>}
+      {message && <p>{message}</p>}
+
+
       {loading ? <div className="loading-state">Loading assets...</div> : assets.length === 0 ? <div className="empty-state">No assets added yet.</div> : (
         <section className="panel" style={{ marginTop: "20px" }}><div className="table-wrap"><table className="data-table"><thead><tr><th>Asset</th><th>Category</th><th>Location</th><th>Condition</th><th>Actions</th></tr></thead><tbody>
           {assets.map((asset) => (
             <tr key={asset._id}><td><strong>{asset.name}</strong><small className="muted">{asset.assetCode}</small></td><td>{asset.category}</td><td>{asset.hostel}, Room {asset.room}</td><td><span className="status-badge status-success">{asset.condition}</span></td><td><button className="button-secondary" type="button" onClick={() => { setEditingId(asset._id); setForm({ name: asset.name, assetCode: asset.assetCode, category: asset.category, hostel: asset.hostel, room: asset.room, condition: asset.condition }); setMessage(""); }}>Edit</button> <button className="button-danger" type="button" onClick={() => deleteAsset(asset._id)}>Delete</button></td></tr>
->>>>>>> 3ceaf172be1721b9777bbb9ad6c949d1f2a2c8d6
           ))}
         </tbody></table></div></section>
       )}
@@ -159,4 +144,8 @@ function ManageAssets() {
   );
 }
 
+
 export default ManageAssets;
+
+
+
