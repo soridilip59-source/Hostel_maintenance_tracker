@@ -12,8 +12,6 @@ function AdminLayout({ children }) {
         <Link className="brand" to="/admin/dashboard"><span className="brand-mark">⌂</span><span>Hostel <b>Maintenance</b><small>Tracker</small></span></Link>
         <p className="nav-label">Workspace</p>
         <nav className="side-nav">{links.map(([to, icon, label]) => <Link className={location.pathname === to ? "active" : ""} key={to} to={to}><span className="nav-icon">{icon}</span>{label}</Link>)}</nav>
-        <p className="nav-label secondary-label">Management</p>
-        <nav className="side-nav"><Link to="/admin/assets"><span className="nav-icon">◎</span>Users</Link><Link to="/admin/requests"><span className="nav-icon">▤</span>Reports</Link></nav>
         <div className="sidebar-footer"><div className="profile-mini"><span className="avatar">{(user.name || "A").charAt(0).toUpperCase()}</span><div><strong>{user.name || "Admin"}</strong><small>{user.email || "admin account"}</small></div></div></div>
       </aside>
       <Navbar />

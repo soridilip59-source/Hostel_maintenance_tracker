@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #0f172a;
@@ -7,6 +9,15 @@
 * { box-sizing: border-box; }
 
 body { margin: 0; min-width: 320px; background: #f8fafc; }
+html.dark body { background: #0b1120; }
+html.dark .auth-page { background: #0b1120; }
+html.dark .auth-grid { opacity: .12; }
+html.dark .auth-card { background: #172033; border-color: #263449; }
+html.dark .auth-form-panel, html.dark .mobile-brand, html.dark .auth-heading h1, html.dark .auth-field label { color: #f8fafc; }
+html.dark .auth-heading > p:last-child, html.dark .auth-footer, html.dark .auth-credit { color: #cbd5e1; }
+html.dark .auth-input-wrap input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+html.dark .role-switch { background: #0f172a; }
+html.dark .role-switch .active { background: #1e293b; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 

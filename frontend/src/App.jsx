@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
@@ -23,6 +24,9 @@ import RequestDetails from "./pages/admin/RequestDetails";
 import ManageAssets from "./pages/admin/ManageAssets";
 
 function App() {
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", localStorage.getItem("theme") === "dark");
+  }, []);
   return (
     <BrowserRouter>
       <Routes>

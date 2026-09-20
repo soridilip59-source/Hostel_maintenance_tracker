@@ -15,6 +15,7 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     api.get("/maintenance").then((response) => setRequests(Array.isArray(response.data?.data) ? response.data.data : [])).catch((requestError) => setError(requestError.response?.data?.message || "Unable to load dashboard data.")).finally(() => setLoading(false));
@@ -25,7 +26,7 @@ function AdminDashboard() {
   const dateLabel = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
   return <>
-    <div className="page-header"><div><p className="eyebrow">Overview</p><h1>Welcome, Admin</h1><p className="subtitle">Here's what's happening in your hostel today.</p></div><span className="page-date">{dateLabel}</span></div>
+    <div className="page-header"><div><p className="eyebrow">Home / Dashboard</p><h1>Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}, {user.name || "Admin"} 👋</h1><p className="subtitle">Here's what's happening in your hostel today.</p></div><span className="page-date">{dateLabel}</span></div>
     {error && <div className="alert error">{error}</div>}
     {loading ? <div className="loading-state">Loading dashboard data...</div> : <>
       <div className="stats-grid"><StatCard icon="◈" label="Total Requests" value={counts.total} trend="Live data" /><StatCard icon="◷" label="Pending" value={counts.pending} trend="Needs attention" /><StatCard icon="◒" label="In Progress" value={counts.progress} trend="Being handled" /><StatCard icon="✓" label="Resolved" value={counts.resolved} trend="Completed" /></div>
