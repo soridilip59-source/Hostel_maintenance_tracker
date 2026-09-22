@@ -15,7 +15,13 @@ function createToken(user) {
 }
 
 function userResponse(user) {
-  return { id: user._id, name: user.name, email: user.email, role: user.role };
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    profileImage: user.profileImage || ""
+  };
 }
 
 // Register
@@ -146,8 +152,12 @@ const loginWithGoogle = async (req, res) => {
       user = await User.create({
         name: payload.name || payload.email.split("@")[0],
         email: payload.email.toLowerCase(),
-        role: "student"
+        role: "student",
+        profileImage: payload.picture || ""
       });
+    } else if (!user.profileImage && payload.picture) {
+      user.profileImage = payload.picture;
+      await user.save();
     }
 
     return res.status(200).json({
@@ -160,8 +170,34 @@ const loginWithGoogle = async (req, res) => {
   }
 };
 
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    return res.json({ data: userResponse(user) });
+  } catch (error) {
+    return res.status(500).json({ message: "Unable to load profile" });
+  }
+};
+
+const updateCurrentUser = async (req, res) => {
+  try {
+    const name = req.body.name?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    if (!name || !email || !/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ message: "A valid name and email are required" });
+    const existing = await User.findOne({ email, _id: { $ne: req.user.id } });
+    if (existing) return res.status(400).json({ message: "That email address is already in use" });
+    const user = await User.findByIdAndUpdate(req.user.id, { name, email }, { new: true, runValidators: true });
+    return res.json({ message: "Profile updated successfully", data: userResponse(user) });
+  } catch (error) {
+    return res.status(500).json({ message: "Unable to update profile" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  loginWithGoogle
+  loginWithGoogle,
+  getCurrentUser,
+  updateCurrentUser,
 };

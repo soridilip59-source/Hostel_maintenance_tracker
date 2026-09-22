@@ -1,31 +1,37 @@
 const Maintenance = require("../models/Maintenance");
-const Asset = require("../models/Asset");
-const mongoose = require("mongoose");
 
 // Create maintenance request
 const createMaintenance = async (req, res) => {
   try {
-    const { assetId, description } = req.body;
+    const { description, title, category, location, image, hostel, roomNumber } = req.body;
+    const selectedRoom = roomNumber || location;
+    const selectedHostel = hostel?.trim();
 
-    if (!assetId || !description?.trim()) {
+    if (!description?.trim() || !category?.trim() || !selectedRoom?.trim()) {
       return res.status(400).json({
-        message: "Asset and description are required",
+        message: "Hostel, room number, category and issue details are required",
       });
     }
 
-    if (!mongoose.isValidObjectId(assetId)) {
-      return res.status(400).json({ message: "Please select a valid asset" });
+    if (!/^\d+$/.test(selectedRoom.trim())) {
+      return res.status(400).json({ message: "Room number must contain digits only" });
     }
 
-    const asset = await Asset.findById(assetId);
-    if (!asset) {
-      return res.status(404).json({ message: "Selected asset was not found" });
+    if (selectedHostel && !["Boys Hostel", "Girls Hostel"].includes(selectedHostel)) {
+      return res.status(400).json({ message: "Please select a valid hostel" });
+    }
+
+    if (image && (!/^data:image\/(jpeg|png|webp);base64,/.test(image) || image.length > 3_000_000)) {
+      return res.status(400).json({ message: "Please upload a JPG, PNG, or WebP image smaller than 2 MB" });
     }
 
     const maintenance = await Maintenance.create({
-      assetId,
       reportedBy: req.user.id,
       description: description.trim(),
+      title: title?.trim() || `${category.trim()} issue`,
+      category: category.trim(),
+      location: selectedHostel ? `${selectedHostel} | Room ${selectedRoom.trim()}` : selectedRoom.trim(),
+      image: image || "",
     });
 
     res.status(201).json({
@@ -145,11 +151,11 @@ const updateMaintenance = async (req, res) => {
   try {
     const { status, resolutionNote } = req.body;
 
-    if (!["Pending", "In Progress", "Resolved"].includes(status)) {
+    if (!["Pending", "In Progress", "In Process", "Resolved", "Rejected"].includes(status)) {
       return res.status(400).json({ message: "Please select a valid status" });
     }
 
-    if (status === "Resolved" && !resolutionNote?.trim()) {
+    if (["Resolved", "Rejected"].includes(status) && !resolutionNote?.trim()) {
       return res.status(400).json({ message: "A resolution note is required when resolving a request" });
     }
 

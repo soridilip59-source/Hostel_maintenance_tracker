@@ -1,16 +1,40 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import StatusBadge from "../../components/StatusBadge";
+import UserAvatar from "../../components/UserAvatar";
 import api from "../../services/api";
 
+const getPlace = (location = "") => {
+  const match = location.match(/^(Boys Hostel|Girls Hostel)\s*\|\s*Room\s*(\d+)$/i);
+  return match ? { hostel: match[1], room: match[2] } : { hostel: "Hostel not specified", room: location.replace(/\D/g, "") || "—" };
+};
+
 function Requests() {
+  const [params] = useSearchParams();
   const [requests, setRequests] = useState([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(() => params.get("q") || "");
   const [status, setStatus] = useState("All");
+  const [category, setCategory] = useState("All");
+  const [hostel, setHostel] = useState("All");
+  const [sort, setSort] = useState("Latest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  useEffect(() => { api.get("/maintenance").then((response) => setRequests(response.data?.data || [])).catch((requestError) => setError(requestError.response?.data?.message || "Unable to load maintenance requests.")).finally(() => setLoading(false)); }, []);
-  const filtered = useMemo(() => requests.filter((request) => { const text = `${request.assetId?.name || ""} ${request.reportedBy?.name || ""} ${request.description || ""}`.toLowerCase(); return text.includes(query.toLowerCase()) && (status === "All" || request.status === status); }), [requests, query, status]);
-  return <><div className="page-header"><div><p className="eyebrow">Operations</p><h1>Maintenance Requests</h1><p className="subtitle">Review, prioritize, and resolve issues reported by students.</p></div><span className="page-date">{requests.length} total requests</span></div><section className="panel"><div className="filter-row"><input className="search-field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by asset, student, or issue..." /><select className="filter-select" value={status} onChange={(event) => setStatus(event.target.value)}><option>All</option><option>Pending</option><option>In Progress</option><option>Resolved</option></select></div>{loading ? <div className="loading-state">Loading maintenance requests...</div> : error ? <div className="error-state">{error}</div> : filtered.length === 0 ? <div className="empty-state">No requests match your filters.</div> : <div className="table-wrap"><table className="data-table"><thead><tr><th>Request</th><th>Asset</th><th>Student</th><th>Issue</th><th>Status</th><th>Date</th><th /></tr></thead><tbody>{filtered.map((request, index) => <tr key={request._id}><td><strong>MR-{String(index + 1).padStart(3, "0")}</strong><small className="muted">Maintenance request</small></td><td>{request.assetId?.name || "Unknown asset"}<small className="muted">{request.assetId?.assetCode}</small></td><td>{request.reportedBy?.name || request.reportedBy?.email || "Student"}<small className="muted">{request.reportedBy?.email}</small></td><td>{request.description}</td><td><StatusBadge status={request.status} /></td><td>{new Date(request.createdAt).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })}</td><td><Link className="button-secondary" to={`/admin/requests/${request._id}`}>View</Link></td></tr>)}</tbody></table></div>}</section></>;
+
+  useEffect(() => {
+    api.get("/maintenance")
+      .then((complaints) => setRequests(complaints.data?.data || []))
+      .catch((requestError) => setError(requestError.response?.data?.message || "Unable to load complaints."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const categories = [...new Set(requests.map((request) => request.category).filter(Boolean))];
+  const filtered = useMemo(() => requests.filter((request) => {
+    const place = getPlace(request.location);
+    const text = `${request.title || ""} ${request.reportedBy?.name || ""} ${request.description || ""} ${request.category || ""} ${place.hostel} ${place.room}`.toLowerCase();
+    return text.includes(query.toLowerCase()) && (status === "All" || request.status === status) && (category === "All" || request.category === category) && (hostel === "All" || place.hostel === hostel);
+  }).sort((a, b) => sort === "Latest" ? new Date(b.createdAt) - new Date(a.createdAt) : new Date(a.createdAt) - new Date(b.createdAt)), [requests, query, status, category, hostel, sort]);
+
+  return <><div className="page-header"><div><p className="eyebrow">Operations</p><h1>All Complaints</h1><p className="subtitle">Review the issue, student, room, and progress in one place.</p></div><span className="page-date">{requests.length} total complaints</span></div><section className="panel complaint-workspace"><div className="filter-row"><input className="search-field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search complaints…" /><select className="filter-select" value={status} onChange={(event) => setStatus(event.target.value)}><option>All</option><option>Pending</option><option>In Process</option><option>Resolved</option><option>Rejected</option></select><select className="filter-select" value={hostel} onChange={(event) => setHostel(event.target.value)}><option>All</option><option>Boys Hostel</option><option>Girls Hostel</option></select><select className="filter-select" value={category} onChange={(event) => setCategory(event.target.value)}><option>All</option>{categories.map((item) => <option key={item}>{item}</option>)}</select><select className="filter-select" value={sort} onChange={(event) => setSort(event.target.value)}><option>Latest</option><option>Oldest</option></select></div>{loading ? <div className="loading-state">Loading complaints…</div> : error ? <div className="error-state">{error}</div> : filtered.length === 0 ? <div className="empty-state">No complaints match these filters.</div> : <div className="complaint-row-list">{filtered.map((request) => { const place = getPlace(request.location); return <article className="complaint-row" key={request._id}><div className="complaint-reporter"><UserAvatar user={request.reportedBy} size="sm" /><div><strong>{request.reportedBy?.name || "Student"}</strong><small>{request.reportedBy?.email || "Student account"}</small></div></div><div className="complaint-summary"><div><span className="hostel-badge">{place.hostel}</span><span className="category-badge">{request.category || "Other"}</span></div><strong>{request.title || `${request.category || "Maintenance"} issue`}</strong><p>{request.description}</p></div><div className="complaint-room"><span>Room</span><strong>{place.room}</strong></div><div className="complaint-state"><StatusBadge status={request.status} /><small>{new Date(request.createdAt).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</small></div><Link className="button-secondary row-action" aria-label={`View complaint from ${request.reportedBy?.name || "student"}`} to={`/admin/requests/${request._id}`}>View</Link></article>; })}</div>}</section></>;
 }
+
 export default Requests;
