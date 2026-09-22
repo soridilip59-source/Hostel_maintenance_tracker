@@ -53,8 +53,11 @@ Create `backend/.env` with your own MongoDB URI and JWT secret:
 
 ```env
 PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
 MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/Hostel_maintenance_tracker
 JWT_SECRET=use_a_long_random_secret_here
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 ```
 
 For MongoDB Atlas, ensure the cluster is running and allow your current IP address in **Network Access**.
@@ -70,7 +73,29 @@ cp .env.example .env
 
 ```env
 VITE_API_URL=http://localhost:5000/api
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 ```
+
+## Deployment
+
+Deploy `backend` and `frontend` as separate projects. The backend includes a Vercel serverless configuration; use `backend` as that project's root directory. Deploy the frontend as a Vite static site with `frontend` as its root directory and `npm run build` as its build command.
+
+Set these values in the hosting provider's environment-variable settings (do not rely on local `.env` files):
+
+```env
+# Backend
+NODE_ENV=production
+MONGO_URI=your-production-mongodb-uri
+JWT_SECRET=a-long-unique-random-secret
+CLIENT_URL=https://your-frontend-domain.example
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+
+# Frontend
+VITE_API_URL=https://your-backend-domain.example/api
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+```
+
+`CLIENT_URL` may contain a comma-separated list of allowed frontend origins when previews are required. Configure a SPA rewrite on any frontend host that does not automatically return `index.html` for React Router URLs.
 
 ## Run the app
 

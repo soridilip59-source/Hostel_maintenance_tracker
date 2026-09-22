@@ -17,6 +17,8 @@ const maintenanceSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+      trim: true,
+      maxlength: 2000,
     },
 
     status: {
@@ -28,6 +30,8 @@ const maintenanceSchema = new mongoose.Schema(
     resolutionNote: {
       type: String,
       default: "",
+      trim: true,
+      maxlength: 2000,
     },
   },
   {
