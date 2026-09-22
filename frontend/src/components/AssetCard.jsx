@@ -11,11 +11,7 @@ function AssetCard({ asset }) {
             <h3>{asset.name}</h3>
             <p className="muted">{asset.category} · {asset.assetCode}</p>
             <div className="asset-meta"><span>Hostel</span><strong>{asset.hostel}</strong></div>
-<<<<<<< HEAD
-            <div className="asset-meta"><span>Room</span><strong>{asset.room}</strong></div>    
-=======
-            <div className="asset-meta"><span>Room</span><strong>{asset.room}</strong></div>     
->>>>>>> 805a7fb (all)
+            <div className="asset-meta"><span>Room</span><strong>{asset.room}</strong></div>
         </article>
     )
 }
