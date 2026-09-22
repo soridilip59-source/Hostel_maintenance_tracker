@@ -1,11 +1,43 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { notify } from "../../components/NotificationCenter";
+import { FEEDBACK_CATEGORIES, HOSTELS } from "../../constants/feedback";
 import api from "../../services/api";
 
-function ReportIssue() {
-  const navigate = useNavigate(); const [asset, setAsset] = useState(""); const [description, setDescription] = useState(""); const [assets, setAssets] = useState([]); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState(""); const [message, setMessage] = useState("");
-  useEffect(() => { api.get("/assets").then((response) => setAssets(response.data?.data || [])).catch((requestError) => setError(requestError.response?.data?.message || "Unable to load assets.")).finally(() => setLoading(false)); }, []);
-  async function handleSubmit(event) { event.preventDefault(); if (!asset || !description.trim()) { setError("Select an asset and describe the problem before submitting."); return; } setSaving(true); setError(""); try { await api.post("/maintenance", { assetId: asset, description }); setMessage("Your issue was reported successfully."); setAsset(""); setDescription(""); } catch (requestError) { setError(requestError.response?.data?.message || "Unable to report issue."); } finally { setSaving(false); } }
-  return <><div className="page-header"><div><p className="eyebrow">New request</p><h1>Report an Issue</h1><p className="subtitle">Tell us what needs attention and our team will take it from there.</p></div><Link className="button-secondary" to="/student/requests">View my requests</Link></div><section className="form-card"><h2>Issue details</h2><p className="muted">Please provide enough detail for the maintenance team to respond quickly.</p>{error && <div className="alert error">{error}</div>}{message && <div className="alert success">{message} <button className="panel-link" onClick={() => navigate("/student/requests")}>View requests</button></div>}<form onSubmit={handleSubmit}><div className="form-field"><label htmlFor="asset">Select asset</label><select id="asset" className="form-control" value={asset} onChange={(event) => { setAsset(event.target.value); setError(""); }} disabled={loading || assets.length === 0}><option value="">{loading ? "Loading assets..." : assets.length ? "Choose an asset" : "No assets available"}</option>{assets.map((item) => <option key={item._id} value={item._id}>{item.name} · {item.assetCode} · Room {item.room}</option>)}</select></div><div className="form-field"><label htmlFor="description">Issue description</label><textarea id="description" className="form-control" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the damage or problem in detail..." /></div><button className="button-primary" type="submit" disabled={saving || loading || !assets.length}>{saving ? "Submitting..." : "Submit request"}</button></form></section></>;
+const initialForm = { hostel: HOSTELS[0], roomNumber: "", category: FEEDBACK_CATEGORIES[0], description: "" };
+
+export default function ReportIssue() {
+  const [form, setForm] = useState(initialForm);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const update = ({ target: { name, value } }) => setForm((current) => ({ ...current, [name]: name === "roomNumber" ? value.replace(/\D/g, "") : value }));
+
+  const submit = async (event) => {
+    event.preventDefault();
+    if (!form.roomNumber || !form.description.trim()) {
+      const message = "Please enter your room number and describe the issue.";
+      setError(message);
+      notify({ type: "warning", message });
+      return;
+    }
+    setSaving(true);
+    setError("");
+    setSuccess("");
+    try {
+      await api.post("/maintenance", form);
+      const message = "Issue reported successfully. The maintenance team has been notified.";
+      setSuccess(message);
+      notify({ type: "success", message: "Issue reported successfully." });
+      setForm(initialForm);
+    } catch (requestError) {
+      const message = requestError.response?.data?.message || "Unable to submit the issue. Please try again.";
+      setError(message);
+      notify({ type: "error", message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return <><div className="page-header"><div><p className="eyebrow">Maintenance support</p><h1>Report an Issue</h1><p className="subtitle">Share the essentials and we’ll route your request to the right team.</p></div></div><section className="form-card report-issue-card"><div className="report-issue-intro"><span className="report-issue-icon" aria-hidden="true">⚡</span><div><h2>Tell us what happened</h2><p className="muted">Reports are automatically recorded with the date and time.</p></div></div>{error && <div className="alert error" role="alert">{error}</div>}{success && <div className="alert success" role="status">{success}</div>}<form className="report-issue-form" onSubmit={submit}><div className="report-field-row"><div className="form-field"><label htmlFor="hostel">Hostel</label><select id="hostel" name="hostel" className="form-control" value={form.hostel} onChange={update}>{HOSTELS.map((hostel) => <option key={hostel}>{hostel}</option>)}</select></div><div className="form-field"><label htmlFor="roomNumber">Room number</label><input id="roomNumber" name="roomNumber" className="form-control" inputMode="numeric" pattern="[0-9]*" value={form.roomNumber} onChange={update} placeholder="e.g. 204" required /></div></div><div className="form-field"><label htmlFor="category">What is your feedback about?</label><select id="category" name="category" className="form-control" value={form.category} onChange={update}>{FEEDBACK_CATEGORIES.map((category) => <option key={category}>{category}</option>)}</select></div><div className="form-field"><label htmlFor="description">Issue details</label><textarea id="description" name="description" className="form-control" value={form.description} onChange={update} placeholder="Briefly describe the problem, including anything that may help the team resolve it." maxLength="2000" required /></div><button type="submit" className="button-primary report-submit" disabled={saving}>{saving ? "Sending report…" : "Submit issue report"}</button></form></section></>;
 }
-export default ReportIssue;

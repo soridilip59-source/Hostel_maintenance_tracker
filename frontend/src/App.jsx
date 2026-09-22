@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
+import NotificationCenter from "./components/NotificationCenter";
 
 // Authentication
 import Login from "./pages/Login";
@@ -12,9 +13,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Student
 import StudentLayout from "./pages/student/StudentLayout";
 import StudentDashboard from "./pages/student/StudentDashboard";
-import RoomAssets from "./pages/student/RoomAssets";
 import ReportIssue from "./pages/student/ReportIssue";
 import MyRequests from "./pages/student/MyRequests";
+import StudentRequestDetails from "./pages/student/RequestDetails";
+import Feedback from "./pages/student/Feedback";
+import Profile from "./pages/student/Profile";
 
 // Admin
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -29,6 +32,7 @@ function App() {
   }, []);
   return (
     <BrowserRouter>
+      <NotificationCenter />
       <Routes>
 
         {/* ================= AUTHENTICATION ================= */}
@@ -58,17 +62,6 @@ function App() {
         />
 
         <Route
-          path="/student/assets"
-          element={
-            <ProtectedRoute allowedRole="student">
-              <StudentLayout>
-                <RoomAssets />
-              </StudentLayout>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/student/report"
           element={
             <ProtectedRoute allowedRole="student">
@@ -89,6 +82,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/student/requests/:id" element={<ProtectedRoute allowedRole="student"><StudentLayout><StudentRequestDetails /></StudentLayout></ProtectedRoute>} />
+        <Route path="/student/feedback" element={<ProtectedRoute allowedRole="student"><StudentLayout><Feedback /></StudentLayout></ProtectedRoute>} />
+        <Route path="/student/profile" element={<ProtectedRoute allowedRole="student"><StudentLayout><Profile /></StudentLayout></ProtectedRoute>} />
 
 
         {/* ================= ADMIN ================= */}
@@ -136,6 +132,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin/feedback" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Feedback /></AdminLayout></ProtectedRoute>} />
 
       </Routes>
     </BrowserRouter>

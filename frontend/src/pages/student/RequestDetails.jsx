@@ -1,0 +1,12 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ImageModal from "../../components/ImageModal";
+import StatusBadge from "../../components/StatusBadge";
+import api from "../../services/api";
+
+export default function RequestDetails() {
+  const { id } = useParams(); const navigate = useNavigate(); const [request, setRequest] = useState(null); const [error, setError] = useState(""); const [preview, setPreview] = useState("");
+  useEffect(() => { api.get(`/maintenance/${id}`).then(({ data }) => setRequest(data.data)).catch((err) => setError(err.response?.data?.message || "Unable to load complaint details.")); }, [id]);
+  if (error) return <div className="error-state">{error}</div>; if (!request) return <div className="loading-state">Loading complaint details…</div>;
+  return <><div className="page-header"><div><p className="eyebrow">Complaint details</p><h1>{request.title || "Maintenance request"}</h1><p className="subtitle">Reported {new Date(request.createdAt).toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p></div><button className="button-secondary" onClick={() => navigate("/student/requests")}>Back to complaints</button></div><div className="detail-layout"><section className="panel"><div className="panel-heading"><h2>Issue information</h2><StatusBadge status={request.status} /></div><dl className="detail-list"><div><dt>Category</dt><dd>{request.category || "Other"}</dd></div><div><dt>Room number</dt><dd>{request.location || "Not provided"}</dd></div><div><dt>Reported on</dt><dd>{new Date(request.createdAt).toLocaleString()}</dd></div></dl><div className="description-box"><strong>Description</strong><p>{request.description}</p></div>{request.image && <button className="detail-image" type="button" onClick={() => setPreview(request.image)}><img src={request.image} alt={`Attachment for ${request.title}`} /><span>Open attachment</span></button>}</section><section className="panel"><div className="panel-heading"><h2>Progress update</h2></div><StatusBadge status={request.status} /><p className="muted status-copy">The maintenance team will update this page as your complaint is reviewed.</p>{request.resolutionNote && <div className="description-box"><strong>{request.status === "Rejected" ? "Team note" : "Resolution note"}</strong><p>{request.resolutionNote}</p></div>}</section></div><ImageModal src={preview} onClose={() => setPreview("")} /></>;
+}

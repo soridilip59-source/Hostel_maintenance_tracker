@@ -1,45 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import UserAvatar, { displayName } from "./UserAvatar";
 
 function Navbar() {
   const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
-  function toggleTheme() { const next = !dark; setDark(next); localStorage.setItem("theme", next ? "dark" : "light"); }
 
+  const title = useMemo(() => {
+    if (role === "admin") return "Administrator";
+    return "Student";
+  }, [role]);
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("user");
-
-
-
-    navigate("/", { replace: true });
+  function toggleTheme() {
+    setDark((current) => !current);
   }
 
-
-  const role = localStorage.getItem("role");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const destination = role === "admin" ? "/admin/requests" : "/student/requests";
+    navigate(search.trim() ? `${destination}?q=${encodeURIComponent(search.trim())}` : destination);
+  };
 
   return (
     <header className="topbar">
       <button className="mobile-menu-button" aria-label="Open navigation" onClick={() => window.dispatchEvent(new Event("toggle-sidebar"))}>☰</button>
-      <div className="topbar-search"><span>⌕</span><input aria-label="Search" placeholder="Search anything..." /></div>
+
+      <form className="topbar-search" onSubmit={submitSearch}>
+        <span>⌕</span>
+        <input aria-label="Search complaints" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search complaints…" />
+      </form>
+
       <div className="topbar-actions">
-        <button className="icon-button" aria-label="Notifications">♢<span className="notification-dot" /></button>
         <button className="icon-button theme-toggle" aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleTheme}>{dark ? "☀" : "☾"}</button>
-        <div className="user-menu"><span className="avatar">{(user.name || (role === "admin" ? "Admin" : "Student")).charAt(0).toUpperCase()}</span><div><strong>{user.name || (role === "admin" ? "Admin" : "Student")}</strong><small>{role === "admin" ? "Administrator" : "Student"}</small></div><span className="chevron">⌄</span></div>
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
+
+        <div className="user-menu">
+          <UserAvatar user={user} size="sm" className="avatar" />
+          <div>
+            <strong>{displayName(user) || title}</strong>
+            <small>{title}</small>
+          </div>
+          <span className="chevron">⌄</span>
+        </div>
+
       </div>
     </header>
   );
 }
-
 
 export default Navbar;
