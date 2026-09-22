@@ -1,8 +1,3 @@
 node_modules/
 .env
-<<<<<<< HEAD
-
-
-  
-=======
->>>>>>> 3ceaf172be1721b9777bbb9ad6c949d1f2a2c8d6
+ .env.example
