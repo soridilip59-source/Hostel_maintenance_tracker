@@ -5,7 +5,7 @@ const maintenanceSchema = new mongoose.Schema(
     assetId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Asset",
-      required: false,
+      required: true,
     },
 
     reportedBy: {
@@ -18,46 +18,20 @@ const maintenanceSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-    },
-
-    title: {
-      type: String,
-      trim: true,
-      default: "Maintenance request",
-    },
-
-    category: {
-      type: String,
-      trim: true,
-      default: "Other",
-    },
-
-    location: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-
-    priority: {
-      type: String,
-      enum: ["Low", "Medium", "High", "Urgent"],
-      default: "Medium",
-    },
-
-    image: {
-      type: String,
-      default: "",
+      maxlength: 2000,
     },
 
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "In Process", "Resolved", "Rejected"],
+      enum: ["Pending", "In Progress", "Resolved"],
       default: "Pending",
     },
 
     resolutionNote: {
       type: String,
       default: "",
+      trim: true,
+      maxlength: 2000,
     },
   },
   {

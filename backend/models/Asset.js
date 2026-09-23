@@ -6,6 +6,7 @@ const assetSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 100,
     },
 
     assetCode: {
@@ -13,24 +14,28 @@ const assetSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      maxlength: 100,
     },
 
     category: {
       type: String,
       required: true,
       trim: true,
+      maxlength: 100,
     },
 
     hostel: {
       type: String,
       required: true,
       trim: true,
+      maxlength: 100,
     },
 
     room: {
       type: String,
       required: true,
       trim: true,
+      maxlength: 50,
     },
 
     condition: {
