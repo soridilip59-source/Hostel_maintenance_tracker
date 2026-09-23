@@ -6,6 +6,7 @@ const { rateLimit } = require("express-rate-limit");
 const maintenanceRoutes = require("./routes/maintenanceRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const authRoutes = require("./routes/authRoutes");
+// feedbackRoutes intentionally removed to disable feedback API
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/assets", assetRoutes);
+// Feedback endpoints removed from API to disable feedback feature
 
 app.use((req, res) => {
   res.status(404).json({

@@ -83,7 +83,7 @@ function App() {
           }
         />
         <Route path="/student/requests/:id" element={<ProtectedRoute allowedRole="student"><StudentLayout><StudentRequestDetails /></StudentLayout></ProtectedRoute>} />
-        <Route path="/student/feedback" element={<ProtectedRoute allowedRole="student"><StudentLayout><Feedback /></StudentLayout></ProtectedRoute>} />
+        {/* Feedback route removed from UI */}
         <Route path="/student/profile" element={<ProtectedRoute allowedRole="student"><StudentLayout><Profile /></StudentLayout></ProtectedRoute>} />
 
 
@@ -132,7 +132,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/admin/feedback" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Feedback /></AdminLayout></ProtectedRoute>} />
+        {/* Admin feedback route removed from UI */}
 
       </Routes>
     </BrowserRouter>
