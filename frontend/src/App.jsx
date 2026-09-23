@@ -16,7 +16,6 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import ReportIssue from "./pages/student/ReportIssue";
 import MyRequests from "./pages/student/MyRequests";
 import StudentRequestDetails from "./pages/student/RequestDetails";
-import Feedback from "./pages/student/Feedback";
 import Profile from "./pages/student/Profile";
 
 // Admin
