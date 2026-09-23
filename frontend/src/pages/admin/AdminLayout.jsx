@@ -6,7 +6,7 @@ import UserAvatar, { displayName } from "../../components/UserAvatar";
 function AdminLayout({ children }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const location = useLocation();
-  const links = [["/admin/dashboard", "▦", "Dashboard"], ["/admin/requests", "≡", "All Complaints"], ["/admin/assets", "▣", "Assets"], ["/admin/feedback", "★", "Feedback"]];
+  const links = [["/admin/dashboard", "▦", "Dashboard"], ["/admin/requests", "≡", "All Complaints"], ["/admin/assets", "▣", "Assets"]];
 
   useEffect(() => {
     const toggle = () => document.getElementById("sidebar")?.classList.toggle("open");

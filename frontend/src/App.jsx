@@ -16,8 +16,6 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import ReportIssue from "./pages/student/ReportIssue";
 import MyRequests from "./pages/student/MyRequests";
 import StudentRequestDetails from "./pages/student/RequestDetails";
-import Feedback from "./pages/student/Feedback";
-import Profile from "./pages/student/Profile";
 
 // Admin
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -83,8 +81,6 @@ function App() {
           }
         />
         <Route path="/student/requests/:id" element={<ProtectedRoute allowedRole="student"><StudentLayout><StudentRequestDetails /></StudentLayout></ProtectedRoute>} />
-        <Route path="/student/feedback" element={<ProtectedRoute allowedRole="student"><StudentLayout><Feedback /></StudentLayout></ProtectedRoute>} />
-        <Route path="/student/profile" element={<ProtectedRoute allowedRole="student"><StudentLayout><Profile /></StudentLayout></ProtectedRoute>} />
 
 
         {/* ================= ADMIN ================= */}
@@ -132,8 +128,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/admin/feedback" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Feedback /></AdminLayout></ProtectedRoute>} />
-
       </Routes>
     </BrowserRouter>
   );

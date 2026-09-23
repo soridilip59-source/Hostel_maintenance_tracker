@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const dns = require("node:dns");
 
 let connectionPromise;
 
 const connectDB = async () => {
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI is not configured");
+  }
+
+  if (process.env.MONGO_DNS_SERVER) {
+    dns.setServers([process.env.MONGO_DNS_SERVER]);
   }
 
   if (mongoose.connection.readyState === 1) {

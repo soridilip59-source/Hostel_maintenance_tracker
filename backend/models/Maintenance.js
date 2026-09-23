@@ -5,13 +5,36 @@ const maintenanceSchema = new mongoose.Schema(
     assetId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Asset",
-      required: true,
+      required: false,
     },
 
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    title: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    image: {
+      type: String,
+      default: "",
     },
 
     description: {

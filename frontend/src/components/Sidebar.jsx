@@ -8,9 +8,7 @@ function Sidebar() {
   const links = [
     ["/student/dashboard", "▦", "Dashboard"],
     ["/student/report", "+", "Report Issue"],
-    ["/student/requests", "≡", "All Complaints"],
-    ["/student/feedback", "★", "Feedback"],
-    ["/student/profile", "◉", "Profile"]
+    ["/student/requests", "≡", "All Complaints"]
   ];
 
   useEffect(() => {
