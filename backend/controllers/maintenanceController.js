@@ -3,6 +3,8 @@ const Maintenance = require("../models/Maintenance");
 // Create maintenance request
 const createMaintenance = async (req, res) => {
   try {
+    console.log("[createMaintenance] incoming request body:", JSON.stringify(req.body));
+    console.log("[createMaintenance] current user:", req.user);
     const { description, title, category, location, image, hostel, roomNumber } = req.body;
     const selectedRoom = roomNumber || location;
     const selectedHostel = hostel?.trim();
@@ -39,6 +41,7 @@ const createMaintenance = async (req, res) => {
       data: maintenance,
     });
   } catch (error) {
+    console.error("[createMaintenance] caught error:", error);
     res.status(500).json({
       message: "Error creating maintenance request",
       error: error.message,

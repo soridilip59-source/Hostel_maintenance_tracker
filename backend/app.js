@@ -10,10 +10,19 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-const allowedOrigins = (process.env.CLIENT_URL || "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const defaultAllowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
+const allowedOrigins = [...new Set([
+  ...defaultAllowedOrigins,
+  ...(process.env.CLIENT_URL || "").split(","),
+].map((origin) => origin.trim()).filter(Boolean))];
 
 const corsOptions = {
   origin(origin, callback) {
